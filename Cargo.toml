@@ -1,0 +1,35 @@
+[package]
+name = "ros"
+version = "0.1.0"
+authors = ["Alexander Simmerl <a.simmerl@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+bootloader = "0.6"
+lazy_static = { version = "1.0", features = [ "spin_no_std" ] }
+spin = "0.4"
+uart_16550 = "0.2"
+volatile = "0.2"
+x86_64 = "0.7"
+
+# Enable port mapped memory for test runner to kill wm.
+[package.metadata.bootimage]
+test-args = [
+  "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04",
+  "-display", "none",
+  "-serial", "stdio",
+]
+test-success-exit-code = 33 # (0x10 <<1) | 1
+test-timeout = 60           # (in secodns)
+
+# The profile used for `cargo build`.
+[profile.dev]
+panic = "abort" # Disable stack unwinding on panic.
+
+# The profile used for `cargo build --release`.
+[profile.release]
+panic = "abort" # Disable stack unwinding on panic.
+
+[[test]]
+name = "panic_handler"
+harness = false
